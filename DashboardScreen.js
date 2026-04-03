@@ -6,11 +6,10 @@ import * as SQLite from 'expo-sqlite';
 
 const db = SQLite.openDatabaseSync('naturealertdb'); //opening database
 
-export default function HomeScreen ( {navigation}) {
+export default function DashboardScreen ( {navigation}) {
 
-const [alertlist, setAlertlist] = useState([]);
+const [hazardlist, setHazardlist] = useState([]);
 
-//const [AddNewAlert, setAddNewAlert] = useState([]);
 
 const separator = () => (
     <View style={styles.separator} />
@@ -22,7 +21,7 @@ const initialize = async () => {
    
   try {
     await db.execAsync(`
-      CREATE TABLE IF NOT EXISTS alert (id INTEGER PRIMARY KEY NOT NULL, alert_type TEXT, alert_description TEXT, dateandtime TEXT, address TEXT, weather TEXT, photo_path TEXT );
+      CREATE TABLE IF NOT EXISTS hazard (id INTEGER PRIMARY KEY NOT NULL, hazard_type TEXT, hazard_desc TEXT, dateandtime TEXT, address TEXT, weather TEXT, photo_path TEXT );
     `);
      await updateList();
   } catch (error) {
@@ -34,8 +33,8 @@ const initialize = async () => {
 
   const updateList = async () => {
     try {
-      const list = await db.getAllAsync('SELECT * from alert');
-      setAlertlist(list);    
+      const list = await db.getAllAsync('SELECT * from hazard');
+      setHazardlist(list);    
       console.log(list);
     } catch (error) {
       console.error('Could not get items', error);
@@ -49,7 +48,7 @@ const initialize = async () => {
     <View style={styles.container}>
         <Text style={styles.text_header} >NatureAlert</Text>
      
-         <Text style={styles.text_title1} >Most recent alerts</Text> 
+         <Text style={styles.text_title1} >Most recent hazards</Text> 
     </View>
  
    <FlatList
@@ -57,11 +56,11 @@ const initialize = async () => {
       renderItem={({ item }) =>            
       <View style={styles.flatlist} >
       
-          <Text style={styles.text} >{item.alert_type}</Text>
+          <Text style={styles.text} >{item.hazard_type}</Text>
         
       </View>
           }
-      data={alertlist}
+      data={hazardlist}
       ItemSeparatorComponent={separator}
       />   
       </SafeAreaView>

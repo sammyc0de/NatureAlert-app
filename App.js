@@ -12,8 +12,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import DashboardScreen from './DashboardScreen'
-import AddNewAlertScreen from './AddNewAlertScreen'
-import AlertListScreen from './AlertScreen'
+import SubmitNewHazard from './SubmitNewHazard'
+import HazardScreen from './HazardsScreen'
 
 const NatureAlert = () => {  
 
@@ -24,15 +24,15 @@ const Tab = createBottomTabNavigator();
       <NavigationContainer>
           <Tab.Navigator
             screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
+              tabBarIcon: ({ color, size }) => {
                 let iconName;
 
                   if (route.name === 'Dashboard') {
                   iconName = 'alert-circle';
-                  } else if (route.name === 'New alert') {
+                  } else if (route.name === 'New hazard') {
                   iconName = 'add-circle';
                   }
-                  else if (route.name === 'List alerts') {
+                  else if (route.name === 'List hazards') {
                   iconName = 'list-circle';
                   }
 
@@ -43,8 +43,8 @@ const Tab = createBottomTabNavigator();
             })}
           >
             <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ headerShown: false }}/>
-            <Tab.Screen name="New alert" component={AddNewAlertScreen} options={{ headerShown: false }}/>
-            <Tab.Screen name="List alerts" component={AlertListScreen} options={{ headerShown: false }}/>
+            <Tab.Screen name="New hazard" component={SubmitNewHazard} options={{ headerShown: false }}/>
+            <Tab.Screen name="List hazards" component={HazardScreen} options={{ headerShown: false }}/>
          </Tab.Navigator>
      
         </NavigationContainer>      

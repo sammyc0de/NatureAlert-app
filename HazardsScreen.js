@@ -1,31 +1,30 @@
 import {useEffect, useState} from 'react';
 import {Text, StyleSheet, View } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
-import * as SQLite from 'expo-sqlite';
 
-const db = SQLite.openDatabaseSync('naturealertdb'); //opening database
+export default function Hazards ( {route}) {
+  //const {????} = route.params;
 
-export default function Map ( {route}) {
-  
-
-const saveItem = async () => {
-  try {
-   await db.runAsync('INSERT INTO alert (alert_type, alert_description, dateandtime, address, weather, photo_path) VALUES (?,?,?,?,?,?)', alert_type, alert_description, dateandtime, address, weather, photo_path);
-    await updateList();
-    //Set??
-  } catch (error) {
-    console.error('Could not add item', error);
+  /*
+const deleteItem = async (id) => {
+    try {
+      await db.runAsync('DELETE FROM alert WHERE id=?', id);
+      await updateList();
+    }
+    catch (error) {
+      console.error('Could not delete item', error);
+    }
   }
-};
 
-  
+
+*/
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
- 
         <View style={styles.container}>
          <Text style={styles.text_header} >NatureAlert</Text>
-         <Text style={styles.text_title1} >Submit new alert</Text>      
+         <Text style={styles.text_title1} >Hazard history</Text>      
         <View style={styles.row}>     
           </View>          
           </View>
