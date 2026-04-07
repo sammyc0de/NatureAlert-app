@@ -1,67 +1,110 @@
-import {useEffect, useState} from 'react';
-import { Button, TextInput} from 'react-native-paper';
-import {Text, StyleSheet, View } from 'react-native';
-import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+//Source for DropDownPicker https://github.com/hossein-zare/react-native-dropdown-picker
+//Source for DatePicker https://docs.expo.dev/versions/latest/sdk/date-time-picker/
+//https://geocode.maps.co/docs/
+
+import React, { useState } from 'react';
+import { Button, TextInput, Text } from 'react-native-paper';
+import {StyleSheet, View, } from 'react-native';
+import { SafeAreaProvider} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import DropDownPicker from 'react-native-dropdown-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+
 import * as SQLite from 'expo-sqlite';
 
 const db = SQLite.openDatabaseSync('naturealertdb'); //opening database
 
-export default function Map ( {route}) {
+export default function NewHazard ( {route}) {
   
 const [hazard_type, setHazard_type] = useState('');
 const [hazard_desc, setHazard_desc] = useState('');
-const [dateandtime, setDateandtime] = useState('');
+const [dateandtime, setDateandtime] = useState(new Date());
 const [address, setAddress] = useState('');
 const [weather, setWeather] = useState('');
 const [photo_path, setPhoto_path] = useState('');
 
+const [open, setOpen] = useState(false); //dropdown menu
+const [show, setShow] = useState(false); //show date time picker
+
+const GEOCODE_API_KEY = process.env.EXPO_PUBLIC_GEOCODE_API_KEY;
+
 
 const saveItem = async () => {
-  try {
-   await db.runAsync('INSERT INTO hazard (hazard_type, hazard_desc, dateandtime, address, weather, photo_path) VALUES (?,?,?,?,?,?)', hazard_type, hazard_desc, dateandtime, address, weather, photo_path);
+    try {
+      const dateandtime_iso = dateandtime.toISOString(); // Convetr date and time for ISO string format
+    await db.runAsync('INSERT INTO hazard (hazard_type, hazard_desc, dateandtime, address, photo_path) VALUES (?,?,?,?,?)', hazard_type, hazard_desc, dateandtime_iso, address, photo_path);
+    console.log(hazard_type) 
     setHazard_type('');
-    setHazard_desc('');
-    setDateandtime('');
-    setAddress('');
-    setWeather('');
-    setPhoto_path('');
-  } catch (error) {
-    console.error('Could not add hazard', error);
-  }
+      setHazard_desc('');      
+      setAddress('');
+      setWeather('');
+      setPhoto_path('');
+    } catch (error) {
+      console.error('Could not add hazard', error);
+    }
 };
 
-  
+
+//item for dropdown menu
+const [items, setItems] = useState([
+  {label: 'Animal', value: 'Animal'},
+  {label: 'Fallen trees', value: 'Tree'},
+  {label: 'Water', value: 'Water'},
+  {label: 'Wildwire', value: 'Wildwire'},
+  {label: 'Other', value: 'Other'},
+]);
+
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}> 
         <View style={styles.container}>
          <Text style={styles.text_header} >NatureAlert</Text>
-         <Text style={styles.text_title1} >Submit new hazard</Text>      
-          <TextInput
-            style={styles.input}
-            label="Type"
-            onChangeText={hazard_type => setHazard_type(hazard_type)}
-            value={hazard_type}/> 
-         <TextInput 
+         <Text style={styles.text_title1} >Submit new hazard</Text> 
+         <View
+          style={styles.input_dropdown}>
+            <DropDownPicker
+              open={open}
+              value={hazard_type}
+              items={items}
+              setOpen={setOpen}
+              setValue={setHazard_type}
+              setItems={setItems}
+              placeholder={'Choose hazard'}  
+              style={styles.dropdown}
+              />
+          </View>     
+
+           <Text>When</Text>
+
+        <DateTimePicker  
+          value={dateandtime}
+          mode="datetime"
+          display="default"
+          locale="fi-FI"
+          onChange={(event, selected) => {
+            setShow(false);
+            if (selected) setDateandtime(selected); 
+          }}
+        />
+
+          <TextInput 
             style={styles.input}
             label="Description"
             onChangeText={hazard_desc => setHazard_desc(hazard_desc)}
-            value={hazard_desc}/> 
-          <TextInput
-            style={styles.input}
-            label="Date and time"
-            onChangeText={dateandtime => setDateandtime(dateandtime)}
-            value={dateandtime}/> 
+            value={hazard_desc}/>      
+
+         <Text>Get Location</Text>       
+
          <TextInput 
             style={styles.input}
             label="Address"
             onChangeText={address => setAddress(address)}
-            value={address}/> 
-         <TextInput
-            style={styles.input}
-            label="Weather"
-            onChangeText={weather => setWeather(weather)}
-            value={weather}/> 
+            value={address}/>     
+
+        <Text>Take photo</Text>  
+
          <TextInput 
             style={styles.input}
             label="Photo"
@@ -100,10 +143,21 @@ const styles = StyleSheet.create({
   },
    input: { //input
     width: 300,
+    height: 25,
     padding: 5,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 10,
-    marginTop: 10,
+    marginTop: 10
+  },
+   input_dropdown: { //input dropdown   
+    alignItems: 'center',  
+    justifyContent: 'center',
+    paddingHorizontal: 50
+  },
+   dropdown: {
+    borderWidth: 1,
+    height: 60,
+    marginBottom: 10
   },
 });
