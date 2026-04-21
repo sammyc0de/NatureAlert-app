@@ -36,7 +36,7 @@ const initialize = async () => {
   //data for flatlist
   const updateList = async () => {
     try {
-      const list = await db.getAllAsync('SELECT * from hazard ORDER BY dateandtime DESC LIMIT 10'); //last 10 hazards will be show
+      const list = await db.getAllAsync('SELECT * from hazard ORDER BY dateandtime DESC LIMIT 8'); //last 8 hazards will be show
       setHazardlist(list);    
       console.log(list);
     } catch (error) {
@@ -64,8 +64,7 @@ const initialize = async () => {
               <Text style={styles.text}>{item.hazard_desc}</Text>
               <Text style={styles.text}>{item.address}</Text>
               <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>
-               <Text style={styles.text}>(photo)</Text>  
-              </View>    
+            </View>    
               <Text style={styles.text}>{item.hazard_type}</Text>  
             </View>
             }

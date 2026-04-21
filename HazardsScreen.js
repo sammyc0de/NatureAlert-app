@@ -73,7 +73,6 @@ const deleteItem = async (id) => {
               <Text style={styles.text}>{item.hazard_desc}</Text>
               <Text style={styles.text}>{item.address}</Text>
               <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>
-               <Text style={styles.text}>(photo)</Text>  
               </View>    
               <Text style={styles.text}>{item.hazard_type}</Text>  
             </View>

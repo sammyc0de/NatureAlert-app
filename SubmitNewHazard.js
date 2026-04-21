@@ -4,12 +4,12 @@
 
 import React, { useState } from 'react';
 import { Button, TextInput, Text } from 'react-native-paper';
-import {StyleSheet, View, } from 'react-native';
+import {StyleSheet, View, Pressable} from 'react-native';
 import { SafeAreaProvider} from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import * as Location from 'expo-location';
 
 import * as SQLite from 'expo-sqlite';
 
@@ -20,15 +20,16 @@ export default function NewHazard ( {route}) {
 const [hazard_type, setHazard_type] = useState('');
 const [hazard_desc, setHazard_desc] = useState('');
 const [dateandtime, setDateandtime] = useState(new Date());
-const [address, setAddress] = useState('');
-const [weather, setWeather] = useState('');
+const [address, setAddress] = useState(null);
+
 const [photo_path, setPhoto_path] = useState('');
 
 const [open, setOpen] = useState(false); //dropdown menu
 const [show, setShow] = useState(false); //show date time picker
 
 const GEOCODE_API_KEY = process.env.EXPO_PUBLIC_GEOCODE_API_KEY;
-
+const [latitude, setLatitude] = useState(null); 
+const [longitude, setLongitude] = useState(null);
 
 const saveItem = async () => {
     try {
@@ -38,22 +39,69 @@ const saveItem = async () => {
     setHazard_type('');
       setHazard_desc('');      
       setAddress('');
-      setWeather('');
       setPhoto_path('');
     } catch (error) {
       console.error('Could not add hazard', error);
     }
 };
 
-
-//item for dropdown menu
+//items for hazard dropdown menu
 const [items, setItems] = useState([
   {label: 'Animal', value: 'Animal'},
   {label: 'Fallen trees', value: 'Tree'},
   {label: 'Water', value: 'Water'},
-  {label: 'Wildwire', value: 'Wildwire'},
+  {label: 'Wildfire', value: 'Wildwire'},
   {label: 'Other', value: 'Other'},
 ]);
+
+
+
+const GetLocation = async () => {
+
+    let { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert('No permission to get location')
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+
+    const { latitude, longitude } = location.coords;
+   
+    setLatitude(latitude); 
+    setLongitude(longitude);  
+
+
+   const url = `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=${GEOCODE_API_KEY}`; 
+
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      //Jos osoitetta ei löydy
+      if (data.length === 0) { 
+       console.log("Address not found");
+       return; 
+      }
+
+      //check if house number exist on location
+
+      if (!data.address?.house_number) { 
+          const fullAddress = `${data.address?.road}, ${data.address?.city}`;
+          setAddress(fullAddress);
+      }
+      else {
+          const fullAddress = `${data.address?.road} ${data.address?.house_number}, ${data.address?.city}`;
+          setAddress(fullAddress);
+      }
+
+
+          })
+    .catch(error => console.log('error', error));   
+
+  };
+
 
 
   return (
@@ -76,12 +124,11 @@ const [items, setItems] = useState([
               />
           </View>     
 
-           <Text>When</Text>
-
+     
         <DateTimePicker  
           value={dateandtime}
           mode="datetime"
-          display="default"
+          display="spinner"
           locale="fi-FI"
           onChange={(event, selected) => {
             setShow(false);
@@ -93,16 +140,18 @@ const [items, setItems] = useState([
             style={styles.input}
             label="Description"
             onChangeText={hazard_desc => setHazard_desc(hazard_desc)}
-            value={hazard_desc}/>      
+            value={hazard_desc}/>  
 
-         <Text>Get Location</Text>       
-
+         <Pressable onPress={GetLocation}>
+            <Text style={{ color: 'dodgerblue' }}>Get Location</Text>
+        </Pressable>
          <TextInput 
             style={styles.input}
             label="Address"
             onChangeText={address => setAddress(address)}
+             editable={false}
             value={address}/>     
-
+           
         <Text>Take photo</Text>  
 
          <TextInput 
