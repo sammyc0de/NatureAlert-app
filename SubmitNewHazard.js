@@ -2,16 +2,19 @@
 //Source for DatePicker https://docs.expo.dev/versions/latest/sdk/date-time-picker/
 //https://geocode.maps.co/docs/
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button, TextInput, Text } from 'react-native-paper';
-import {StyleSheet, View, Pressable} from 'react-native';
+import {StyleSheet, View, Pressable, Image} from 'react-native';
 import { SafeAreaProvider} from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Location from 'expo-location';
+import * as ImagePicker from "expo-image-picker";
 
 import * as SQLite from 'expo-sqlite';
+
 
 const db = SQLite.openDatabaseSync('naturealertdb'); //opening database
 
@@ -22,7 +25,6 @@ const [hazard_desc, setHazard_desc] = useState('');
 const [dateandtime, setDateandtime] = useState(new Date());
 const [address, setAddress] = useState(null);
 
-const [photo_path, setPhoto_path] = useState('');
 
 const [open, setOpen] = useState(false); //dropdown menu
 const [show, setShow] = useState(false); //show date time picker
@@ -30,6 +32,8 @@ const [show, setShow] = useState(false); //show date time picker
 const GEOCODE_API_KEY = process.env.EXPO_PUBLIC_GEOCODE_API_KEY;
 const [latitude, setLatitude] = useState(null); 
 const [longitude, setLongitude] = useState(null);
+
+const [photo_path, setPhoto_path] = useState(null);
 
 const saveItem = async () => {
     try {
@@ -103,6 +107,17 @@ const GetLocation = async () => {
   };
 
 
+  const pickPhoto = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setPhoto_path(result.assets[0].uri);
+    }
+  };
+
 
   return (
     <SafeAreaProvider>
@@ -128,7 +143,7 @@ const GetLocation = async () => {
         <DateTimePicker  
           value={dateandtime}
           mode="datetime"
-          display="spinner"
+          display="default"
           locale="fi-FI"
           onChange={(event, selected) => {
             setShow(false);
@@ -152,20 +167,28 @@ const GetLocation = async () => {
              editable={false}
             value={address}/>     
            
-        <Text>Take photo</Text>  
 
-         <TextInput 
+{/*          <TextInput 
             style={styles.input}
             label="Photo"
             onChangeText={photo_path => setPhoto_path(photo_path)}
-            value={photo_path}/>        
+            value={photo_path}/>    */}     
          
+    <Pressable onPress={pickPhoto}>
+            <Text style={{ color: 'dodgerblue', marginBottom:10 }}>Select photo</Text>
+        </Pressable> 
 
-      <Button mode="contained" onPress={saveItem}  icon="content-save">
+        <Image
+          source={{ uri: photo_path }}
+          style={ styles.image }
+        />
+  
+ <Button mode="contained" onPress={saveItem}  icon="content-save">
         Save
       </Button> 
           </View>          
-        
+ 
+     
         </SafeAreaView>
     </SafeAreaProvider>
 
@@ -209,4 +232,10 @@ const styles = StyleSheet.create({
     height: 60,
     marginBottom: 10
   },
+  image: {
+    marginBottom: 10,
+    marginTop: 10,
+    width: 150, 
+    height: 150
+  }
 });

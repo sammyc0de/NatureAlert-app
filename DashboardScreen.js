@@ -2,6 +2,7 @@
 import {useEffect, useState} from 'react';
 import { StyleSheet, View, FlatList, Text } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import { Button } from "react-native-paper";   // ✔️ supports children + icon
 
 import * as SQLite from 'expo-sqlite';
 
@@ -64,9 +65,10 @@ const initialize = async () => {
               <Text style={styles.text}>{item.hazard_desc}</Text>
               <Text style={styles.text}>{item.address}</Text>
               <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>
-            </View>    
-              <Text style={styles.text}>{item.hazard_type}</Text>  
+            </View>     
+              <Button style={styles.text} onPress={() => navigation.navigate("ShowPhoto", { photo_path: item.photo_path })}>{item.hazard_type}</Button>
             </View>
+            
             }
         data={hazardlist}
         ItemSeparatorComponent={separator}
@@ -114,6 +116,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     height: 1,
     backgroundColor: '#c8c5c5',
+  },
+   showphoto: { 
+    fontSize: 16,
+    color: '#9E9E9E'
   }
 });
 
