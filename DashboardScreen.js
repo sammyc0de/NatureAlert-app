@@ -1,8 +1,10 @@
-//https://geocode.maps.co/docs/
-import {useEffect, useState} from 'react';
+//Source for SQLite https://haagahelia.github.io/mobilecourse/docs/DataPersistence/sqlite
+//Source for useFocusEffect https://reactnavigation.org/docs/use-focus-effect/?utm_source=copilot.com
+import {useEffect, useState, useCallback} from 'react';
 import { StyleSheet, View, FlatList, Text } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
-import { Button } from "react-native-paper";   // ✔️ supports children + icon
+import { Button } from "react-native-paper"; 
+import { useFocusEffect } from '@react-navigation/native';
 
 import * as SQLite from 'expo-sqlite';
 
@@ -12,14 +14,13 @@ export default function DashboardScreen ( {navigation}) {
 
 const [hazardlist, setHazardlist] = useState([]);
 
-
+//Separator for flatlist
 const separator = () => (
     <View style={styles.separator} />
 );
 
 //Database initialize and creating new table if it does not exist
 useEffect(() => { initialize() }, []);
-
 
 //Removed weather from database Apr 7th
 const initialize = async () => { 
@@ -32,9 +33,17 @@ const initialize = async () => {
   } catch (error) {
     console.error('Could not open database', error);
   }
+  
 }
 
-  //data for flatlist
+//Run updateList every time when screen is opened
+useFocusEffect(
+  useCallback(() => {
+    updateList();  
+  }, [])
+);
+
+  //Data for flatlist
   const updateList = async () => {
     try {
       const list = await db.getAllAsync('SELECT * from hazard ORDER BY dateandtime DESC LIMIT 8'); //last 8 hazards will be show
@@ -61,7 +70,7 @@ const initialize = async () => {
         renderItem={({ item }) =>
 
             <View style={styles.flatlist} >
-               <View style={{ flex: 1 }}>
+               <View>
               <Text style={styles.text}>{item.hazard_desc}</Text>
               <Text style={styles.text}>{item.address}</Text>
               <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>

@@ -1,6 +1,10 @@
 //Source for DropDownPicker https://github.com/hossein-zare/react-native-dropdown-picker
 //Source for DatePicker https://docs.expo.dev/versions/latest/sdk/date-time-picker/
-//https://geocode.maps.co/docs/
+//Source for Geocode https://geocode.maps.co/docs/
+//Source for ImagePicker https://docs.expo.dev/versions/latest/sdk/imagepicker/
+//Source for Location https://docs.expo.dev/versions/latest/sdk/location/
+//Source for SQLite https://haagahelia.github.io/mobilecourse/docs/DataPersistence/sqlite
+//Source for Date ISO string https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
 
 import React, { useState, useRef } from 'react';
 import { Button, TextInput, Text } from 'react-native-paper';
@@ -9,12 +13,9 @@ import { SafeAreaProvider} from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Location from 'expo-location';
 import * as ImagePicker from "expo-image-picker";
-
 import * as SQLite from 'expo-sqlite';
-
 
 const db = SQLite.openDatabaseSync('naturealertdb'); //opening database
 
@@ -24,7 +25,6 @@ const [hazard_type, setHazard_type] = useState('');
 const [hazard_desc, setHazard_desc] = useState('');
 const [dateandtime, setDateandtime] = useState(new Date());
 const [address, setAddress] = useState(null);
-
 
 const [open, setOpen] = useState(false); //dropdown menu
 const [show, setShow] = useState(false); //show date time picker
@@ -37,13 +37,13 @@ const [photo_path, setPhoto_path] = useState(null);
 
 const saveItem = async () => {
     try {
-      const dateandtime_iso = dateandtime.toISOString(); // Convetr date and time for ISO string format
-    await db.runAsync('INSERT INTO hazard (hazard_type, hazard_desc, dateandtime, address, photo_path) VALUES (?,?,?,?,?)', hazard_type, hazard_desc, dateandtime_iso, address, photo_path);
-    console.log(hazard_type) 
-    setHazard_type('');
-      setHazard_desc('');      
-      setAddress('');
-      setPhoto_path('');
+     const dateandtime_iso = dateandtime.toISOString(); // Convert date and time for ISO string format
+     await db.runAsync('INSERT INTO hazard (hazard_type, hazard_desc, dateandtime, address, photo_path) VALUES (?,?,?,?,?)', hazard_type, hazard_desc, dateandtime_iso, address, photo_path);
+     console.log(hazard_type) 
+     setHazard_type('');
+     setHazard_desc('');      
+     setAddress('');
+     setPhoto_path('');
     } catch (error) {
       console.error('Could not add hazard', error);
     }
@@ -57,7 +57,6 @@ const [items, setItems] = useState([
   {label: 'Wildfire', value: 'Wildwire'},
   {label: 'Other', value: 'Other'},
 ]);
-
 
 
 const GetLocation = async () => {
@@ -83,7 +82,7 @@ const GetLocation = async () => {
     fetch(url)
     .then(response => response.json())
     .then(data => {
-      //Jos osoitetta ei löydy
+      //if address does not dounf
       if (data.length === 0) { 
        console.log("Address not found");
        return; 
@@ -100,24 +99,23 @@ const GetLocation = async () => {
           setAddress(fullAddress);
       }
 
-
           })
     .catch(error => console.log('error', error));   
 
   };
 
-
+  //Selecting photo for hazard
   const pickPhoto = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
       quality: 1,
     });
 
     if (!result.canceled) {
       setPhoto_path(result.assets[0].uri);
     }
-  };
-
+  }; 
 
   return (
     <SafeAreaProvider>
@@ -139,7 +137,6 @@ const GetLocation = async () => {
               />
           </View>     
 
-     
         <DateTimePicker  
           value={dateandtime}
           mode="datetime"
@@ -165,15 +162,8 @@ const GetLocation = async () => {
             label="Address"
             onChangeText={address => setAddress(address)}
              editable={false}
-            value={address}/>     
-           
+            value={address}/>
 
-{/*          <TextInput 
-            style={styles.input}
-            label="Photo"
-            onChangeText={photo_path => setPhoto_path(photo_path)}
-            value={photo_path}/>    */}     
-         
     <Pressable onPress={pickPhoto}>
             <Text style={{ color: 'dodgerblue', marginBottom:10 }}>Select photo</Text>
         </Pressable> 
@@ -186,8 +176,7 @@ const GetLocation = async () => {
  <Button mode="contained" onPress={saveItem}  icon="content-save">
         Save
       </Button> 
-          </View>          
- 
+          </View> 
      
         </SafeAreaView>
     </SafeAreaProvider>
@@ -220,7 +209,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 10,
-    marginTop: 10
+    marginTop: 10  
   },
    input_dropdown: { //input dropdown   
     alignItems: 'center',  

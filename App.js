@@ -1,10 +1,8 @@
-//Testattu ainoastaan iOS-simulaattorilla!
-//https://haagahelia.github.io/mobilecourse/docs/
-//https://reactnavigation.org/docs/getting-started
-//https://haagahelia.github.io/mobilecourse/docs/Navigation/reactnavigation
-//https://icons.expo.fyi/Index
-//npm install react-native-paper, npx expo install expo-sqlite, npx expo install react-native-safe-area-context
-//npm install @react-navigation/native, npx expo install react-native-screens react-native-safe-area-context  
+//Testattu ainoastaan iOS-simulaattorilla! Application tested on only iOS-simulator
+//Source for React Native https://haagahelia.github.io/mobilecourse/docs/
+//Source for Navigation https://reactnavigation.org/docs/getting-started
+//Source for Navigationhttps://haagahelia.github.io/mobilecourse/docs/Navigation/reactnavigation
+//Source for icons https://icons.expo.fyi/Index
 
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
@@ -12,6 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+//Screen imports
 import DashboardScreen from './DashboardScreen'
 import SubmitNewHazard from './SubmitNewHazard'
 import HazardScreen from './HazardsScreen'
@@ -23,6 +22,8 @@ const NatureAlert = () => {
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+
+//Only main screens will be shown in the nav. ShowPhoto screen will be excluded from nav. 
 function Tabs() {
   return (
     <Tab.Navigator

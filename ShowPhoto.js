@@ -1,10 +1,12 @@
+//Source for icons https://icons.expo.fyi/Index
+//Source for moving between screen https://reactnavigation.org/docs/navigating/
+//Source for routes https://reactnavigation.org/docs/params/
 import React from "react";
 import { Image, View, Pressable, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function ShowPhoto({ route, navigation }) {
   const { photo_path } = route.params;
-
 
   return (
       <View style={{ flex: 1, backgroundColor: "#000" }}>
