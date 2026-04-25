@@ -1,17 +1,20 @@
-import {useEffect, useState} from 'react';
-import {Text, StyleSheet, View, FlatList } from 'react-native';
+//Source for useFocusEffect https://reactnavigation.org/docs/use-focus-effect/
+//Source for SQLite https://haagahelia.github.io/mobilecourse/docs/DataPersistence/sqlite
+//Source for alert dialog https://reactnative.dev/docs/alert
+
+import {useEffect, useState, useCallback} from 'react';
+import {Text, StyleSheet, View, FlatList, Pressable, Alert } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
+import { Button } from "react-native-paper"; 
 
 import * as SQLite from 'expo-sqlite';
 
 const db = SQLite.openDatabaseSync('naturealertdb'); //opening database
 
-
-export default function Hazards ( {route}) {
-  //const {????} = route.params;
+export default function Hazards ( {navigation}) {
 
 const [hazardlist, setHazardlist] = useState([]);
-
 
 const separator = () => (
     <View style={styles.separator} />
@@ -30,8 +33,15 @@ const initialize = async () => {
   }
 }
 
+    //Run updateList every time when screen is opened
+    useFocusEffect(
+      useCallback(() => {
+        updateList();  
+      }, [])
+    );
 
-  //data for flatlist
+
+  //Data for flatlist
   const updateList = async () => {
     try {
       const list = await db.getAllAsync('SELECT * from hazard ORDER BY dateandtime DESC'); //order by date and time
@@ -43,7 +53,18 @@ const initialize = async () => {
   }   
 
 
-  /*
+const confirmDelete = (id) => {
+  Alert.alert(
+    "Delete hazard",
+    "Are you sure you want to delete this?",
+    [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => deleteItem(id) }
+    ]
+  );
+};
+
+
 const deleteItem = async (id) => {
     try {
       await db.runAsync('DELETE FROM hazard WHERE id=?', id);
@@ -54,8 +75,6 @@ const deleteItem = async (id) => {
     }
   }
 
-
-*/
 
   return (
     <SafeAreaProvider>
@@ -73,8 +92,12 @@ const deleteItem = async (id) => {
               <Text style={styles.text}>{item.hazard_desc}</Text>
               <Text style={styles.text}>{item.address}</Text>
               <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>
-              </View>    
-              <Text style={styles.text}>{item.hazard_type}</Text>  
+             {/* <Button onPress={() => deleteItem(item.id)} icon="delete"></Button>  */}
+        <Pressable onPress={() => confirmDelete(item.id)}>
+          <Text style={styles.text_delete} >Delete</Text>
+        </Pressable>  
+              </View> 
+              <Button style={styles.button} onPress={() => navigation.navigate("ShowPhoto", { photo_path: item.photo_path })}>{item.hazard_type}</Button> 
             </View>
             }
         data={hazardlist}
@@ -120,9 +143,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#9E9E9E'
   },
+  text_delete: { //flatlist text
+    fontSize: 16,
+     color: '#e65555'
+  },
   separator: { //erottaja flatlists
     marginTop: 5,
     height: 1,
     backgroundColor: '#c8c5c5',
-  }
+  },
+  button: { 
+   marginLeft: 'auto' 
+    }
 });

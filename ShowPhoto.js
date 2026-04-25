@@ -1,6 +1,7 @@
 //Source for icons https://icons.expo.fyi/Index
 //Source for moving between screen https://reactnavigation.org/docs/navigating/
 //Source for routes https://reactnavigation.org/docs/params/
+//Source for image https://reactnative.dev/docs/image
 import React from "react";
 import { Image, View, Pressable, StyleSheet } from "react-native";
 import Ionicons from '@expo/vector-icons/Ionicons';

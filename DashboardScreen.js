@@ -1,5 +1,5 @@
 //Source for SQLite https://haagahelia.github.io/mobilecourse/docs/DataPersistence/sqlite
-//Source for useFocusEffect https://reactnavigation.org/docs/use-focus-effect/?utm_source=copilot.com
+//Source for useFocusEffect https://reactnavigation.org/docs/use-focus-effect/
 import {useEffect, useState, useCallback} from 'react';
 import { StyleSheet, View, FlatList, Text } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
