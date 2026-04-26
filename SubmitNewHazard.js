@@ -8,7 +8,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Button, TextInput, Text } from 'react-native-paper';
-import {StyleSheet, View, Pressable, Image} from 'react-native';
+import {StyleSheet, View, Pressable, Image, Alert} from 'react-native';
 import { SafeAreaProvider} from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DropDownPicker from 'react-native-dropdown-picker';
@@ -35,8 +35,20 @@ const [longitude, setLongitude] = useState(null);
 
 const [photo_path, setPhoto_path] = useState(null);
 
+const handleSave = () => {
+  //Check if all the required fiels are filled
+  if (!hazard_type || !hazard_desc || !dateandtime || !photo_path || !address) {
+    Alert.alert("Check fields", "Please fill all fields before submitting");
+    return;
+  }
+
+  // Continue saving if all the fields are filled
+  saveItem();
+};
+
+
 const saveItem = async () => {
-    try {
+    try {      
      const dateandtime_iso = dateandtime.toISOString(); // Convert date and time for ISO string format
      await db.runAsync('INSERT INTO hazard (hazard_type, hazard_desc, dateandtime, address, photo_path) VALUES (?,?,?,?,?)', hazard_type, hazard_desc, dateandtime_iso, address, photo_path);
      console.log(hazard_type) 
@@ -137,7 +149,8 @@ const GetLocation = async () => {
               />
           </View>     
 
-        <DateTimePicker  
+        <DateTimePicker
+          style={styles.DTpicker}  
           value={dateandtime}
           mode="datetime"
           display="default"
@@ -173,7 +186,7 @@ const GetLocation = async () => {
           style={ styles.image }
         />
   
- <Button mode="contained" onPress={saveItem}  icon="content-save">
+ <Button mode="contained" onPress={handleSave}  icon="content-save">
         Save
       </Button> 
           </View> 
@@ -226,5 +239,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: 150, 
     height: 150
+  },
+  DTpicker: {
+    paddingRight: 20
   }
 });

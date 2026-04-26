@@ -92,7 +92,6 @@ const deleteItem = async (id) => {
               <Text style={styles.text}>{item.hazard_desc}</Text>
               <Text style={styles.text}>{item.address}</Text>
               <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>
-             {/* <Button onPress={() => deleteItem(item.id)} icon="delete"></Button>  */}
         <Pressable onPress={() => confirmDelete(item.id)}>
           <Text style={styles.text_delete} >Delete</Text>
         </Pressable>  
