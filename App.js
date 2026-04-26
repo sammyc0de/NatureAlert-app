@@ -3,6 +3,7 @@
 //Source for Navigation https://reactnavigation.org/docs/getting-started
 //Source for Navigationhttps://haagahelia.github.io/mobilecourse/docs/Navigation/reactnavigation
 //Source for icons https://icons.expo.fyi/Index
+//Source for https://reactnavigation.org/docs/customizing-tabbar/
 
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {NavigationContainer} from '@react-navigation/native';
