@@ -46,7 +46,6 @@ const initialize = async () => {
     try {
       const list = await db.getAllAsync('SELECT * from hazard ORDER BY dateandtime DESC'); //order by date and time
       setHazardlist(list);    
-      console.log(list);
     } catch (error) {
       console.error('Could not get items', error);
     }
@@ -82,22 +81,21 @@ const deleteItem = async (id) => {
         <View style={styles.container}>
          <Text style={styles.text_header} >NatureAlert</Text>
          <Text style={styles.text_title1} >Hazard history</Text>      
-      <FlatList
-   
+      <FlatList   
         keyExtractor={item => item.id.toString()}
         renderItem={({ item }) =>
-
-            <View style={styles.flatlist} >
-               <View style={{ flex: 1 }}>
+        <View style={styles.flatlist} >
+          <View style={{ flex: 1 }}>
+            <Pressable onLongPress={() => confirmDelete(item.id)}>
               <Text style={styles.text}>{item.hazard_desc}</Text>
               <Text style={styles.text}>{item.address}</Text>
-              <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>
-        <Pressable onPress={() => confirmDelete(item.id)}>
-          <Text style={styles.text_delete} >Delete</Text>
-        </Pressable>  
-              </View> 
-              <Button style={styles.button} onPress={() => navigation.navigate("ShowPhoto", { photo_path: item.photo_path })}>{item.hazard_type}</Button> 
-            </View>
+              <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>      
+            </Pressable> 
+          </View>
+        <Pressable onPress={() => navigation.navigate("ShowPhoto", { photo_path: item.photo_path })}>
+          <Text style={styles.text_hazard_type} >{item.hazard_type}</Text>
+        </Pressable>              
+          </View>
             }
         data={hazardlist}
         ItemSeparatorComponent={separator}
@@ -115,7 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center'
   },
-  text_header: { //flatlist text
+  text_header: { 
     fontSize: 28,
     fontWeight: "600",
     marginBottom: 16,
@@ -142,16 +140,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#9E9E9E'
   },
-  text_delete: { //flatlist text
-    fontSize: 16,
-     color: '#e65555'
-  },
-  separator: { //erottaja flatlists
+  separator: { //erottaja flatlist
     marginTop: 5,
     height: 1,
     backgroundColor: '#c8c5c5',
   },
-  button: { 
-   marginLeft: 'auto' 
-    }
+  text_hazard_type: { //flatlist text
+    marginLeft: 'auto',
+    fontSize: 16,
+    color: '#e65555'
+   } 
 });

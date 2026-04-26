@@ -1,4 +1,4 @@
-//Testattu ainoastaan iOS-simulaattorilla! Application tested on only iOS-simulator
+//Testattu ainoastaan iOS-simulaattorilla! Application tested on only iOS-simulator!
 //Source for React Native https://haagahelia.github.io/mobilecourse/docs/
 //Source for Navigation https://reactnavigation.org/docs/getting-started
 //Source for Navigationhttps://haagahelia.github.io/mobilecourse/docs/Navigation/reactnavigation

@@ -1,7 +1,7 @@
 //Source for SQLite https://haagahelia.github.io/mobilecourse/docs/DataPersistence/sqlite
 //Source for useFocusEffect https://reactnavigation.org/docs/use-focus-effect/
 import {useEffect, useState, useCallback} from 'react';
-import { StyleSheet, View, FlatList, Text } from 'react-native';
+import { StyleSheet, View, FlatList, Text, Pressable } from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 import { Button } from "react-native-paper"; 
 import { useFocusEffect } from '@react-navigation/native';
@@ -22,7 +22,6 @@ const separator = () => (
 //Database initialize and creating new table if it does not exist
 useEffect(() => { initialize() }, []);
 
-//Removed weather from database Apr 7th
 const initialize = async () => { 
    
   try {
@@ -48,7 +47,6 @@ useFocusEffect(
     try {
       const list = await db.getAllAsync('SELECT * from hazard ORDER BY dateandtime DESC LIMIT 8'); //last 8 hazards will be show
       setHazardlist(list);    
-      console.log(list);
     } catch (error) {
       console.error('Could not get items', error);
     }
@@ -75,7 +73,9 @@ useFocusEffect(
               <Text style={styles.text}>{item.address}</Text>
               <Text style={styles.text_alt} >{new Date(item.dateandtime).toLocaleString()} </Text>
             </View>     
-              <Button style={styles.text} onPress={() => navigation.navigate("ShowPhoto", { photo_path: item.photo_path })}>{item.hazard_type}</Button>
+              <Pressable onPress={() => navigation.navigate("ShowPhoto", { photo_path: item.photo_path })}>
+                <Text style={styles.text_hazard_type} >{item.hazard_type}</Text>
+              </Pressable>    
             </View>
             
             }
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center'
   },
-  text_header: { //flatlist text
+  text_header: { 
     fontSize: 28,
     fontWeight: "600",
     marginBottom: 16,
@@ -126,9 +126,10 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#c8c5c5',
   },
-   showphoto: { 
+  text_hazard_type: { //flatlist text
+    marginLeft: 'auto',
     fontSize: 16,
-    color: '#9E9E9E'
-  }
+    color: '#e65555'
+   } 
 });
 

@@ -5,6 +5,8 @@
 //Source for Location https://docs.expo.dev/versions/latest/sdk/location/
 //Source for SQLite https://haagahelia.github.io/mobilecourse/docs/DataPersistence/sqlite
 //Source for Date ISO string https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+//Source for React Native paper theme http://oss.callstack.com/react-native-paper/docs/guides/theming
+//Source for Text Input icon https://oss.callstack.com/react-native-paper/docs/components/TextInput/TextInputIcon/
 
 import React, { useState, useRef } from 'react';
 import { Button, TextInput, Text } from 'react-native-paper';
@@ -51,7 +53,6 @@ const saveItem = async () => {
     try {      
      const dateandtime_iso = dateandtime.toISOString(); // Convert date and time for ISO string format
      await db.runAsync('INSERT INTO hazard (hazard_type, hazard_desc, dateandtime, address, photo_path) VALUES (?,?,?,?,?)', hazard_type, hazard_desc, dateandtime_iso, address, photo_path);
-     console.log(hazard_type) 
      setHazard_type('');
      setHazard_desc('');      
      setAddress('');
@@ -85,11 +86,9 @@ const GetLocation = async () => {
     const { latitude, longitude } = location.coords;
    
     setLatitude(latitude); 
-    setLongitude(longitude);  
+    setLongitude(longitude);
 
-
-   const url = `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=${GEOCODE_API_KEY}`; 
-
+    const url = `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}&api_key=${GEOCODE_API_KEY}`; 
 
     fetch(url)
     .then(response => response.json())
@@ -110,24 +109,22 @@ const GetLocation = async () => {
           const fullAddress = `${data.address?.road} ${data.address?.house_number}, ${data.address?.city}`;
           setAddress(fullAddress);
       }
-
           })
     .catch(error => console.log('error', error));   
 
-  };
+};
 
   //Selecting photo for hazard
   const pickPhoto = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images', 'videos'],
-      allowsEditing: true,
+      mediaTypes: ['images'],
       quality: 1,
     });
 
-    if (!result.canceled) {
+     if (!result.canceled) {
       setPhoto_path(result.assets[0].uri);
-    }
-  }; 
+    } 
+  };  
 
   return (
     <SafeAreaProvider>
@@ -165,28 +162,60 @@ const GetLocation = async () => {
             style={styles.input}
             label="Description"
             onChangeText={hazard_desc => setHazard_desc(hazard_desc)}
-            value={hazard_desc}/>  
+            value={hazard_desc}
+            textColor="black"
+            theme={{
+              colors: {
+              onSurfaceVariant: "black", 
+              primary: "black",          
+              },
+              }}
+            />    
 
-         <Pressable onPress={GetLocation}>
-            <Text style={{ color: 'dodgerblue' }}>Get Location</Text>
-        </Pressable>
          <TextInput 
             style={styles.input}
             label="Address"
             onChangeText={address => setAddress(address)}
-             editable={false}
-            value={address}/>
+            editable={false}
+            value={address}
+            right={
+            <TextInput.Icon
+              style={styles.icon}
+              icon="image-filter-center-focus-strong"
+              onPress={GetLocation}
+              size={40}               
+            />}
+            theme={{
+              colors: {
+              onSurfaceVariant: "black", 
+              primary: "black",          
+              },
+              }}            
+            />
 
-    <Pressable onPress={pickPhoto}>
-            <Text style={{ color: 'dodgerblue', marginBottom:10 }}>Select photo</Text>
-        </Pressable> 
-
+        <Button
+          mode="outlined"
+          icon="image"
+          onPress={pickPhoto}
+          textColor="black"
+          buttonColor="white"
+          style={styles.photo_button}   
+        >
+          Select photo
+        </Button>
+        {/* Do not render photo if it's do not exist */}
+      {photo_path ? (
         <Image
           source={{ uri: photo_path }}
           style={ styles.image }
         />
-  
- <Button mode="contained" onPress={handleSave}  icon="content-save">
+      ) : null}
+
+      <Button
+        mode="contained" 
+        onPress={handleSave}  
+        icon="content-save"
+        style={styles.saveButton}>
         Save
       </Button> 
           </View> 
@@ -222,7 +251,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 10,
-    marginTop: 10  
+    marginTop: 10,
+    backgroundColor: 'rgba(206, 147, 147, 0.53)'   
   },
    input_dropdown: { //input dropdown   
     alignItems: 'center',  
@@ -232,7 +262,8 @@ const styles = StyleSheet.create({
    dropdown: {
     borderWidth: 1,
     height: 60,
-    marginBottom: 10
+    marginBottom: 10,
+    backgroundColor: 'rgba(206, 147, 147, 0.53)'  
   },
   image: {
     marginBottom: 10,
@@ -242,5 +273,16 @@ const styles = StyleSheet.create({
   },
   DTpicker: {
     paddingRight: 20
+  },
+  saveButton: {
+     backgroundColor: '#cc4c4c'
+  },
+  icon: { //get location icon
+    left: 0,
+    marginTop: 35
+  },
+  photo_button: {
+    borderColor: "black",
+    marginBottom: 20
   }
 });
