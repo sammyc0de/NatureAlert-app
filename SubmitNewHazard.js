@@ -29,7 +29,9 @@ const [dateandtime, setDateandtime] = useState(new Date());
 const [address, setAddress] = useState(null);
 
 const [open, setOpen] = useState(false); //dropdown menu
-const [show, setShow] = useState(false); //show date time picker
+
+//const [show, setShow] = useState(false); //show date time picker
+
 
 const GEOCODE_API_KEY = process.env.EXPO_PUBLIC_GEOCODE_API_KEY;
 const [latitude, setLatitude] = useState(null); 
@@ -145,18 +147,17 @@ const GetLocation = async () => {
               style={styles.dropdown}
               />
           </View>     
-
+   
         <DateTimePicker
           style={styles.DTpicker}  
           value={dateandtime}
           mode="datetime"
-          display="default"
+          display="spinner"
           locale="fi-FI"
-          onChange={(event, selected) => {
-            setShow(false);
+          onChange={(event, selected) => {            
             if (selected) setDateandtime(selected); 
           }}
-        />
+        /> 
 
           <TextInput 
             style={styles.input}
@@ -249,9 +250,9 @@ const styles = StyleSheet.create({
     height: 25,
     padding: 5,
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     marginBottom: 10,
-    marginTop: 10,
+    marginTop: 5,
     backgroundColor: 'rgba(206, 147, 147, 0.53)'   
   },
    input_dropdown: { //input dropdown   
@@ -267,9 +268,9 @@ const styles = StyleSheet.create({
   },
   image: {
     marginBottom: 10,
-    marginTop: 10,
-    width: 150, 
-    height: 150
+    marginTop: 5,
+    width: 80, 
+    height: 80
   },
   DTpicker: {
     paddingRight: 20
@@ -283,6 +284,6 @@ const styles = StyleSheet.create({
   },
   photo_button: {
     borderColor: "black",
-    marginBottom: 20
+    marginBottom: 10
   }
 });
